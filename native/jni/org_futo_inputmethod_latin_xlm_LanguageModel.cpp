@@ -406,6 +406,12 @@ struct LanguageModelState {
                 //AKLOGI("DEBUG: pos %.4f %.4f got this: [%.4f %.4f %.4f %.4f %.4f %.4f %.4f ...",
                 //       mix.x, mix.y,
                 //             mix_f[0], mix_f[1], mix_f[2], mix_f[3], mix_f[4], mix_f[5], mix_f[6]);
+            } else if (llamaAdapter->embeddings.empty()) {
+                // Model does not advertise char_embed_mixing_v1, so the
+                // embedding table was never populated. Fall back to a
+                // zero-embedding position (mix_f is zero-initialized)
+                // instead of dereferencing an empty vector.
+                num_added = 1;
             } else {
                 for (auto &t: mix.mixes) {
                     if (t.weight < EPS) continue;
